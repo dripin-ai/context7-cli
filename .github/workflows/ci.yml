@@ -1,0 +1,60 @@
+# Runs the offline test suite on every pull request and on every push to main.
+#
+# Why the matrix is split. engines.node is ">=18.3.0" because bin/c7.js uses
+# util.parseArgs, which landed in 18.3.0. The *product* does run there, and the
+# engines-floor job below proves it. The *test harness* does not: test/helpers/cli.js
+# needs `--import` (Node 18.18.0) and four test files need `context.after`
+# (Node 18.13.0). Measured on 2026-10-13:
+#
+#   $ npx node@18.3.0 --test               -> 8 of 10 files fail
+#   $ npx node@18.3.0 bin/c7.js --version  -> 1.0.3
+#   $ npx node@18.3.0 -e "console.log(process.allowedNodeEnvironmentFlags.has('--import'))"
+#     -> false
+#
+# So `npm test` runs on the Node versions whose test runner can host the harness, and
+# the floor claim is tested where it actually lives: against the CLI itself.
+#
+# What this workflow does NOT cover, and stays the reviewer's job: no lint, no coverage
+# threshold, no publish, no secrets, and no test touches the live Context7 API — every
+# request is stubbed, so a green run says nothing about the upstream API being healthy.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: npm test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+
+  engines-floor:
+    name: the CLI runs on the engines.node floor (18.3.0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 18.3.0
+      - name: util.parseArgs is available
+        run: node -e "import('node:util').then(m => { if (typeof m.parseArgs !== 'function') process.exit(1); })"
+      - name: --version, --help and a usage error work without a request
+        run: |
+          node bin/c7.js --version | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          node bin/c7.js --help | grep -q 'c7 resolve <query>'
+          ! node bin/c7.js --tokens abc 2>/dev/null

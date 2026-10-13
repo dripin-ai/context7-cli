@@ -8,6 +8,8 @@ Built on top of [Context7](https://context7.com) — the same docs that power Cu
 
 > **Note:** This package is published as [`@vedanth/context7`](https://www.npmjs.com/package/@vedanth/context7) on npm. The unscoped `context7` on npm is a different, unrelated project.
 
+> **Fork:** This repository is a fork of [`VedanthB/context7-cli`](https://github.com/VedanthB/context7-cli) and tracks it. It hardens the CLI's argument and URL handling: library IDs are validated and percent-encoded instead of being interpolated into the request path, `--tokens` and unknown flags are validated via `util.parseArgs`, requests time out, non-documentation responses are no longer printed as docs, `--json` is resolve-only, and `c7 resolve` searches the whole query.
+
 ## Why?
 
 There's been a growing consensus that CLIs are better than MCP servers for developer tools. MCP locks you into specific editors. A CLI just gives you text — pipe it wherever you want.
@@ -30,6 +32,7 @@ npm install -g @vedanth/context7     # Or install globally
 ```bash
 # Find a library
 c7 resolve nextjs
+c7 resolve "state management"
 
 # Get docs (auto-resolves library name)
 c7 docs nextjs "app router"
@@ -53,7 +56,7 @@ c7 docs nextjs "api routes" | llm "summarize these docs"
 
 | Command | Description |
 |---------|-------------|
-| `c7 resolve <library>` | Find Context7 library IDs for a search term |
+| `c7 resolve <query>` | Find Context7 library IDs for a search query; several words are one query, quoted or not |
 | `c7 docs <library> [topic]` | Get docs (auto-resolves name to best match) |
 | `c7 <library> [topic]` | Shorthand for `c7 docs` |
 
@@ -61,9 +64,37 @@ c7 docs nextjs "api routes" | llm "summarize these docs"
 
 | Flag | Description |
 |------|-------------|
-| `--tokens <n>` | Max tokens to return (default: 5000) |
+| `--tokens <n>` | Max tokens to return, positive integer (default: 5000) |
 | `--api-key <key>` | Context7 API key (or set `CONTEXT7_API_KEY` env) |
-| `--json` | Raw JSON output (resolve only) |
+| `--json` | Raw JSON output — `c7 resolve` only, an error elsewhere |
+| `--` | End of options; what follows is a library or topic |
+
+## Exit codes
+
+`0` on success, `1` on anything else: a usage error, no match, or an upstream failure.
+
+An empty result is exit `1` in both output modes. With `--json` that means stdout is still
+valid JSON — `[]` — while the exit code says there was nothing to find, so a script can
+test either one:
+
+```bash
+c7 resolve nope --json   # prints [] on stdout, exits 1
+```
+
+## A shorthand that looks like a typo
+
+`c7 <library>` is shorthand for `c7 docs <library>`, but a first word within two edits of
+`resolve` or `docs` is refused as a likely typo rather than searched. Context7's search is
+fuzzy enough to answer `reslove` with react-hook-form/resolvers and `dcos` with mdn/content,
+so guessing would hand you the wrong library's docs at exit 0.
+
+The price is that four real packages — **`docz`**, **`dojo`**, **`dock`** and **`dios`** —
+are refused as a bare shorthand. Name the subcommand and they work:
+
+```bash
+c7 docz          # refused: did you mean "c7 docs"?
+c7 docs docz     # works
+```
 
 ## API Key (optional)
 
@@ -118,7 +149,7 @@ Two API calls:
 1. **Resolve** — searches Context7's index for a library name, returns a library ID
 2. **Fetch** — pulls documentation for that ID, filtered by topic and token limit
 
-The CLI is 170 lines across two files (`bin/c7.js` + `lib/api.js`), uses only Node's built-in `fetch`, and has zero npm dependencies.
+The CLI is two files (`bin/c7.js` + `lib/api.js`), uses only Node's built-ins (`fetch`, `util.parseArgs`), and has zero npm dependencies.
 
 ## Credits
 
@@ -134,4 +165,4 @@ Powered by [Context7](https://context7.com) by [Upstash](https://upstash.com).
 
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE).
