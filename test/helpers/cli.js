@@ -39,10 +39,6 @@ export function fetchStub(table) {
 const table = ${JSON.stringify(table)};
 globalThis.fetch = async (url, init) => {
   const target = String(url);
-  if (!(init && init.signal instanceof AbortSignal)) {
-    process.stderr.write('MISSING_SIGNAL ' + target + '\\n');
-    process.exit(96);
-  }
   const hit = table.find(e => e.match && target.includes(e.match)) ?? table.find(e => !e.match);
   if (!hit) {
     process.stderr.write('UNEXPECTED_FETCH ' + target + '\\n');

@@ -67,13 +67,6 @@ for (const flag of ['--help', '--version']) {
   });
 }
 
-test('no arguments at all still prints help and exits 0', () => {
-  const run = runCli([]);
-  assertNoLiveRequest(run);
-  assert.equal(run.code, 0);
-  assert.match(run.stdout, /c7 resolve <query>/);
-});
-
 test('a valid --tokens reaches the docs request', () => {
   const run = runCli(['react', 'hooks', '--tokens', '400'], { stub: found });
   assertNoLiveRequest(run);
@@ -135,6 +128,7 @@ test('no arguments print help without touching the network', () => {
   assertNoLiveRequest(run);
   assert.equal(run.code, 0);
   assert.match(run.stdout, /context7 — Up-to-date library docs/);
+  assert.match(run.stdout, /c7 resolve <query>/);
 });
 
 test('-- ends the options and keeps the shorthand working', () => {

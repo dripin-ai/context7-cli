@@ -97,23 +97,25 @@ test('the exact subcommands are never near-missed', () => {
   }
 });
 
-for (const [alias, pattern] of [['r', /^ {2}\/x\/react {2}stub$/m], ['d', /\/api\/v1\/x\/react\?/]]) {
-  test(`the "${alias}" alias works`, () => {
-    const run = runCli([alias, 'react'], { stub: found('/x/react') });
-    assertNoLiveRequest(run);
-    assert.equal(run.code, 0);
-    assert.match(run.stdout, pattern);
+// The `r`/`d` aliases are upstream behaviour and stay.
+const ALIASES = [
+  ['r', /^ {2}\/x\/react {2}stub$/m, /usage: c7 resolve/],
+  ['d', /\/api\/v1\/x\/react\?/, /usage: c7 docs/],
+];
+
+for (const [alias, output, usage] of ALIASES) {
+  test(`the "${alias}" alias dispatches, and needs an argument`, () => {
+    const ok = runCli([alias, 'react'], { stub: found('/x/react') });
+    assertNoLiveRequest(ok);
+    assert.equal(ok.code, 0);
+    assert.match(ok.stdout, output);
+
+    const bare = runCli([alias]);
+    assertNoLiveRequest(bare);
+    assert.equal(bare.code, 1);
+    assert.match(bare.stderr, usage);
   });
 }
-
-test('an alias without an argument is a usage error', () => {
-  for (const [alias, pattern] of [['r', /usage: c7 resolve/], ['d', /usage: c7 docs/]]) {
-    const run = runCli([alias]);
-    assertNoLiveRequest(run);
-    assert.equal(run.code, 1, alias);
-    assert.match(run.stderr, pattern);
-  }
-});
 
 test('the near-miss check is case-insensitive', () => {
   const run = runCli(['RESLOVE', 'react']);

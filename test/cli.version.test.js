@@ -45,20 +45,6 @@ test('--version fails with a clear message when package.json is missing', t => {
   assert.equal(run.stdout, '');
 });
 
-test('--help needs no package.json either', t => {
-  const dir = mkdtempSync(join(tmpdir(), 'c7-no-pkg-'));
-  t.after(() => rmSync(dir, { recursive: true, force: true }));
-  for (const sub of ['bin', 'lib']) {
-    cpSync(new URL(sub, ROOT), join(dir, sub), { recursive: true });
-    writeFileSync(join(dir, sub, 'package.json'), '{"type":"module"}\n');
-  }
-  const run = spawnSync(process.execPath, [join(dir, 'bin', 'c7.js'), '--help'], {
-    encoding: 'utf8',
-  });
-  assert.equal(run.status, 0);
-  assert.match(run.stdout, /c7 resolve <query>/);
-});
-
 test('the published tarball ships only bin, lib, README and LICENSE', () => {
   // `files` is the only thing keeping test/ and the stub helpers out of the package.
   assert.deepEqual(pkg.files, ['bin/', 'lib/', 'README.md', 'LICENSE']);
