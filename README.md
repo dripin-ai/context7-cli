@@ -56,7 +56,7 @@ c7 docs nextjs "api routes" | llm "summarize these docs"
 
 | Command | Description |
 |---------|-------------|
-| `c7 resolve <query>` | Find Context7 library IDs for a search query (quote multi-word queries) |
+| `c7 resolve <query>` | Find Context7 library IDs for a search query; several words are one query, quoted or not |
 | `c7 docs <library> [topic]` | Get docs (auto-resolves name to best match) |
 | `c7 <library> [topic]` | Shorthand for `c7 docs` |
 
@@ -68,6 +68,33 @@ c7 docs nextjs "api routes" | llm "summarize these docs"
 | `--api-key <key>` | Context7 API key (or set `CONTEXT7_API_KEY` env) |
 | `--json` | Raw JSON output — `c7 resolve` only, an error elsewhere |
 | `--` | End of options; what follows is a library or topic |
+
+## Exit codes
+
+`0` on success, `1` on anything else: a usage error, no match, or an upstream failure.
+
+An empty result is exit `1` in both output modes. With `--json` that means stdout is still
+valid JSON — `[]` — while the exit code says there was nothing to find, so a script can
+test either one:
+
+```bash
+c7 resolve nope --json   # prints [] on stdout, exits 1
+```
+
+## A shorthand that looks like a typo
+
+`c7 <library>` is shorthand for `c7 docs <library>`, but a first word within two edits of
+`resolve` or `docs` is refused as a likely typo rather than searched. Context7's search is
+fuzzy enough to answer `reslove` with react-hook-form/resolvers and `dcos` with mdn/content,
+so guessing would hand you the wrong library's docs at exit 0.
+
+The price is that four real packages — **`docz`**, **`dojo`**, **`dock`** and **`dios`** —
+are refused as a bare shorthand. Name the subcommand and they work:
+
+```bash
+c7 docz          # refused: did you mean "c7 docs"?
+c7 docs docz     # works
+```
 
 ## API Key (optional)
 
