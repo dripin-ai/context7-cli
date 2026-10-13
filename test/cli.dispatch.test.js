@@ -139,12 +139,14 @@ test('a resolve miss stops the docs shorthand with exit 1', () => {
   assert.match(run.stderr, /No libraries found for "nosuchlib"/);
 });
 
-// DEFECT (bin/c7.js:102): the first result is trusted to carry an `id`. A result without
-// one becomes `undefined` and surfaces as an invalid-ID error about a value the user
-// never typed.
-test('DEFECT: a result without an id reports an invalid library ID', () => {
-  const run = runCli(['react'], { stub: stubSearchAndDocs([{ description: 'no id here' }]) });
-  assertNoLiveRequest(run);
-  assert.equal(run.code, 1);
-  assert.match(run.stderr, /Invalid Context7 library ID "undefined"/);
-});
+// A best match without an `id` is reported as what it is, instead of as an invalid-ID
+// error about "undefined" — a value the user never typed.
+for (const result of [{ description: 'no id here' }, { id: '' }, { id: 42 }]) {
+  test(`a result without a usable id names the query, not "undefined": ${JSON.stringify(result)}`, () => {
+    const run = runCli(['react'], { stub: stubSearchAndDocs([result]) });
+    assertNoLiveRequest(run);
+    assert.equal(run.code, 1);
+    assert.match(run.stderr, /The best match for "react" carries no library ID/);
+    assert.ok(!run.stderr.includes('undefined'), 'never report a value the user never typed');
+  });
+}

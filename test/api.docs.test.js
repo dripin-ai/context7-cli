@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getDocs } from '../lib/api.js';
+import { getDocs, TIMEOUT_MS } from '../lib/api.js';
 import { useFetch, installFetch, json, text } from './helpers/fetch.js';
 
 const ID = '/vercel/next.js';
@@ -87,22 +87,26 @@ test('an empty JSON body is an error, not empty documentation', async t => {
 test('an empty markdown body yields no documentation', async t => {
   useFetch(t, () => text('', 'text/markdown'));
   // The API layer returns the empty string; bin/c7.js:107 turns it into exit 1.
-  // Pinned on both levels — see "empty body" in test/cli.docs.test.js.
+  // Pinned on both levels — see "no docs found" in test/cli.dispatch.test.js.
   assert.equal(await getDocs(ID), '');
 });
 
-// DEFECT (lib/api.js:72): an empty result set is not an error. `{"snippets":[]}` and
-// `{}` fall through to JSON.stringify, so the CLI prints the raw envelope as if it were
-// documentation and exits 0. Pinned as-is so the punch-list item is visible in the suite;
-// change these two assertions together with the fix.
-test('DEFECT: empty snippets are stringified instead of rejected', async t => {
+// An envelope carrying neither snippets nor content is not documentation. It yields the
+// empty string, which bin/c7.js:116 turns into "No docs found" and exit 1 — the same exit
+// as an empty markdown body. Printing the raw JSON passed it off as docs at exit 0.
+test('empty snippets yield no documentation, not the raw envelope', async t => {
   useFetch(t, () => json({ snippets: [] }));
-  assert.equal(await getDocs(ID), '{\n  "snippets": []\n}');
+  assert.equal(await getDocs(ID), '');
 });
 
-test('DEFECT: an empty JSON object is stringified instead of rejected', async t => {
+test('an empty JSON object yields no documentation, not the raw envelope', async t => {
   useFetch(t, () => json({}));
-  assert.equal(await getDocs(ID), '{}');
+  assert.equal(await getDocs(ID), '');
+});
+
+test('an unrecognised JSON envelope is never echoed as documentation', async t => {
+  useFetch(t, () => json({ error: 'quota exceeded', requestId: 'abc123' }));
+  assert.equal(await getDocs(ID), '');
 });
 
 const STATUS = [
@@ -162,10 +166,11 @@ test('every request carries a fresh, unaborted AbortSignal', async t => {
 });
 
 test('the request is cancelled after the configured timeout', async t => {
-  // `AbortSignal.timeout` is the only seam: lib/api.js:2 keeps TIMEOUT_MS private and
-  // does not accept an injected signal. Patching the factory makes the abort
-  // deterministic — Node's `mock.timers` cannot drive AbortSignal.timeout, because it
-  // runs on an internal timer the mock does not patch (measured on node v26.5.0).
+  // `AbortSignal.timeout` stays the seam: `resolve`/`getDocs` take no injected signal, so
+  // patching the factory is what makes the abort deterministic — Node's `mock.timers`
+  // cannot drive AbortSignal.timeout, because it runs on an internal timer the mock does
+  // not patch (measured on node v26.5.0). `TIMEOUT_MS` is exported, so the expected delay
+  // below is the production constant rather than a copy of it.
   const requested = [];
   const original = AbortSignal.timeout;
   AbortSignal.timeout = ms => {
@@ -185,9 +190,12 @@ test('the request is cancelled after the configured timeout', async t => {
   }));
 
   await assert.rejects(() => getDocs(ID), err => {
-    assert.equal(err.name, 'TimeoutError');
-    assert.match(err.message, /aborted due to timeout/);
+    // The abort is translated into an actionable message; the DOMException survives as
+    // the cause, so nothing about the original failure is lost.
+    assert.match(err.message, /^Docs fetch failed: context7\.com did not respond within 15s —/);
+    assert.equal(err.cause.name, 'TimeoutError');
+    assert.match(err.cause.message, /aborted due to timeout/);
     return true;
   });
-  assert.deepEqual(requested, [15000], 'the docs request must use the 15 s timeout');
+  assert.deepEqual(requested, [TIMEOUT_MS], 'the docs request must use the configured timeout');
 });

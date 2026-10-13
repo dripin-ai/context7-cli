@@ -43,17 +43,30 @@ test('--tokens without a value is a usage error', () => {
   assert.match(run.stderr, /argument missing|ambiguous/);
 });
 
-// DEFECT (bin/c7.js:151 vs :159): the no-positionals shortcut prints help and exits 0
-// before --tokens is validated, so an invalid value is silently accepted when it stands
-// alone. Pinned as-is; `c7 --tokens abc` should be exit 1 like every case above.
-test('DEFECT: an invalid --tokens without a positional exits 0 with help', () => {
+// Option values are validated before the help and no-positionals shortcuts, so an
+// invalid --tokens is an error whether or not a command follows it.
+test('an invalid --tokens without a positional is still a usage error', () => {
   for (const value of ['abc', '0', '-5']) {
     const run = runCli([`--tokens=${value}`]);
     assertNoLiveRequest(run);
-    assert.equal(run.code, 0, `--tokens=${value} alone`);
-    assert.match(run.stdout, /c7 resolve <query>/);
-    assert.equal(run.stderr, '');
+    assert.equal(run.code, 1, `--tokens=${value} alone`);
+    assert.match(run.stderr, new RegExp(`--tokens expects a positive integer, got "${value}"`));
+    assert.equal(run.stdout, '');
   }
+});
+
+test('an invalid --tokens is not excused by --help', () => {
+  const run = runCli(['--help', '--tokens=abc']);
+  assertNoLiveRequest(run);
+  assert.equal(run.code, 1);
+  assert.match(run.stderr, /--tokens expects a positive integer/);
+});
+
+test('no arguments at all still prints help and exits 0', () => {
+  const run = runCli([]);
+  assertNoLiveRequest(run);
+  assert.equal(run.code, 0);
+  assert.match(run.stdout, /c7 resolve <query>/);
 });
 
 test('a valid --tokens reaches the docs request', () => {
@@ -177,16 +190,26 @@ test('docs without a library is a usage error', () => {
   assert.match(run.stderr, /usage: c7 docs <library> \[topic\]/);
 });
 
-// DEFECT (bin/c7.js:168): an empty string counts as a query, so `c7 resolve ""` spends
-// a request on `query=`. The guard tests `rest.length`, not whether anything was typed.
-test('DEFECT: an empty query is sent to the API instead of being refused', () => {
-  const run = runCli(['resolve', ''], {
-    stub: fetchStub([{ match: 'query=&', contentType: 'application/json', body: '{"results":[]}' }]),
+// An empty or blank query is no query: it is refused before a request is spent on it.
+// The default NO_FETCH stub makes any request a hard failure, so reaching the API here
+// would exit 97 rather than 1.
+for (const args of [['resolve', ''], ['resolve', '   '], ['r', '']]) {
+  test(`an empty query is refused without a request: ${JSON.stringify(args)}`, () => {
+    const run = runCli(args);
+    assertNoLiveRequest(run);
+    assert.equal(run.code, 1);
+    assert.match(run.stderr, /usage: c7 resolve <query>/);
   });
-  assertNoLiveRequest(run);
-  assert.equal(run.code, 1);
-  assert.match(run.stderr, /No libraries found for ""/);
-});
+}
+
+for (const args of [['docs', ''], ['']]) {
+  test(`an empty library name is refused without a request: ${JSON.stringify(args)}`, () => {
+    const run = runCli(args);
+    assertNoLiveRequest(run);
+    assert.equal(run.code, 1);
+    assert.match(run.stderr, /usage: c7 docs <library> \[topic\]/);
+  });
+}
 
 const EMPTY_SEARCH = auth => fetchStub([
   { match: '/search?', contentType: 'application/json', body: '{"results":[]}', expectAuth: auth },

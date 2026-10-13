@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resolve } from '../lib/api.js';
+import { resolve, TIMEOUT_MS } from '../lib/api.js';
 import { useFetch, installFetch, json, text } from './helpers/fetch.js';
 
 const SEARCH = 'https://context7.com/api/v1/search';
@@ -41,12 +41,16 @@ test('an explicitly empty result set yields an empty array', async t => {
   assert.deepEqual(await resolve('nope'), []);
 });
 
-// DEFECT (lib/api.js:42): `data.results || []` trusts the shape. A non-array `results`
-// is handed to the caller unchanged; only bin/c7.js:75 catches it. Pinned so the
-// unguarded return value is visible.
-test('DEFECT: a non-array results field is passed through unvalidated', async t => {
+// The shape is normalised in one place, so every caller of the library export — not just
+// bin/c7.js — gets an array back.
+test('a non-array results field is normalised to an empty array', async t => {
   useFetch(t, () => json({ results: 'boom' }));
-  assert.equal(await resolve('x'), 'boom');
+  assert.deepEqual(await resolve('x'), []);
+});
+
+test('a null results field is normalised to an empty array', async t => {
+  useFetch(t, () => json({ results: null }));
+  assert.deepEqual(await resolve('x'), []);
 });
 
 test('a non-JSON search response fails instead of returning docs', async t => {
@@ -92,7 +96,7 @@ test('the search request carries an AbortSignal and the API key', async t => {
   assert.equal(calls[0].init.headers.Authorization, 'Bearer k');
 });
 
-test('the search request uses the 15 s timeout', async t => {
+test('the search request uses the configured timeout', async t => {
   const requested = [];
   const original = AbortSignal.timeout;
   AbortSignal.timeout = ms => {
@@ -104,5 +108,5 @@ test('the search request uses the 15 s timeout', async t => {
   });
   useFetch(t, () => json({ results: [] }));
   await resolve('react');
-  assert.deepEqual(requested, [15000]);
+  assert.deepEqual(requested, [TIMEOUT_MS]);
 });

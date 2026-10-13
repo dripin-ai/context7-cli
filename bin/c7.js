@@ -70,9 +70,12 @@ function parseTokens(raw) {
   return Number(raw);
 }
 
-async function cmdResolve(query, opts) {
+async function cmdResolve(rawQuery, opts) {
+  const query = rawQuery.trim();
+  if (!query) usage('usage: c7 resolve <query>');
+
   const results = await resolve(query, opts.apiKey);
-  const empty = !Array.isArray(results) || results.length === 0;
+  const empty = results.length === 0;
 
   if (opts.json) {
     console.log(JSON.stringify(empty ? [] : results, null, 2));
@@ -91,15 +94,22 @@ async function cmdResolve(query, opts) {
 
 async function cmdDocs(libraryOrId, topic, opts) {
   if (opts.json) usage('--json applies to "c7 resolve" only');
+  if (!libraryOrId.trim()) usage('usage: c7 docs <library> [topic]');
 
   let libraryId = libraryOrId;
   if (!libraryOrId.startsWith('/')) {
     const results = await resolve(libraryOrId, opts.apiKey);
-    if (!Array.isArray(results) || results.length === 0) {
+    if (results.length === 0) {
       console.error(`No libraries found for "${libraryOrId}"`);
       process.exit(1);
     }
     libraryId = results[0].id;
+    // Don't let a result without an id become an error about "undefined", a value the
+    // user never typed.
+    if (typeof libraryId !== 'string' || !libraryId.trim()) {
+      console.error(`The best match for "${libraryOrId}" carries no library ID`);
+      process.exit(1);
+    }
     if (process.stderr.isTTY) console.error(`→ ${libraryId}`);
   }
 
@@ -141,6 +151,10 @@ async function main() {
 
   const { values, positionals } = parsed;
 
+  // Before any shortcut: an invalid option value is a usage error whether or not a
+  // command follows it.
+  const tokens = parseTokens(values.tokens);
+
   if (values.version || values.help) {
     const flag = values.version ? '--version' : '--help';
     if (positionals.length > 0) usage(`${flag} takes no arguments`);
@@ -156,7 +170,7 @@ async function main() {
   const opts = {
     apiKey: values['api-key'] || process.env.CONTEXT7_API_KEY,
     json: values.json === true,
-    tokens: parseTokens(values.tokens),
+    tokens,
   };
 
   const [cmd, ...rest] = positionals;
