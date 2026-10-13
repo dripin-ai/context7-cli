@@ -1,5 +1,7 @@
 .claude/
 .github/
+.kilo/
 docs/
 marketing/
 node_modules/
+test/
