@@ -7,34 +7,26 @@
     "c7": "bin/c7.js",
     "context7": "bin/c7.js"
   },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "context7",
     "documentation",
     "cli",
-    "mcp",
-    "ai",
-    "coding",
     "docs",
-    "library",
-    "api",
-    "llm",
-    "developer-tools",
-    "terminal",
-    "cursor",
-    "claude",
-    "pipe",
-    "api-reference",
-    "code-examples",
-    "ai-coding",
-    "devtools",
-    "no-dependencies"
+    "mcp",
+    "library"
   ],
   "homepage": "https://c7.akarispeed.xyz/",
   "bugs": {
     "url": "https://github.com/VedanthB/context7-cli/issues"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
