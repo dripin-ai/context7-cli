@@ -55,12 +55,17 @@ test('an invalid --tokens without a positional is still a usage error', () => {
   }
 });
 
-test('an invalid --tokens is not excused by --help', () => {
-  const run = runCli(['--help', '--tokens=abc']);
-  assertNoLiveRequest(run);
-  assert.equal(run.code, 1);
-  assert.match(run.stderr, /--tokens expects a positive integer/);
-});
+// --help always works, even next to a value that would be refused on its own. Help makes
+// no request, so there is nothing to protect there; `--tokens abc` alone stays exit 1.
+for (const flag of ['--help', '--version']) {
+  test(`${flag} wins over an invalid --tokens`, () => {
+    const run = runCli([flag, '--tokens=abc']);
+    assertNoLiveRequest(run);
+    assert.equal(run.code, 0);
+    assert.equal(run.stderr, '');
+    assert.ok(run.stdout.length > 0);
+  });
+}
 
 test('no arguments at all still prints help and exits 0', () => {
   const run = runCli([]);

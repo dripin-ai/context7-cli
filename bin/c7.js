@@ -151,16 +151,18 @@ async function main() {
 
   const { values, positionals } = parsed;
 
-  // Before any shortcut: an invalid option value is a usage error whether or not a
-  // command follows it.
-  const tokens = parseTokens(values.tokens);
-
+  // --help and --version come first: they make no request, so a bad option value has
+  // nothing to protect the user from, and help is what the error would point at anyway.
   if (values.version || values.help) {
     const flag = values.version ? '--version' : '--help';
     if (positionals.length > 0) usage(`${flag} takes no arguments`);
     console.log(values.version ? version() : HELP);
     process.exit(0);
   }
+
+  // Still ahead of the no-positionals shortcut: `c7 --tokens abc` must be a usage error
+  // rather than a help screen at exit 0.
+  const tokens = parseTokens(values.tokens);
 
   if (positionals.length === 0) {
     console.log(HELP);
