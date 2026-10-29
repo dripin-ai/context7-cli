@@ -1,2 +1,8 @@
 node_modules/
 .claude/
+
+# macOS Finder metadata, written into any directory that gets browsed.
+.DS_Store
+
+# Tarballs from `npm pack` / `npm publish --dry-run`, named <name>-<version>.tgz.
+*.tgz
