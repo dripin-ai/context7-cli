@@ -4,6 +4,6 @@ node_modules/
 # macOS Finder metadata, written into any directory that gets browsed.
 .DS_Store
 
-# Tarballs from `npm pack` / `npm publish --dry-run`. This package is scoped, so npm
-# flattens the scope into the filename: vedanth-context7-1.0.3.tgz, not @vedanth/…
+# Tarballs written by `npm pack`; the --dry-run variants of pack and publish write none.
+# npm flattens the scope of @vedanth/context7 into vedanth-context7-1.0.3.tgz.
 *.tgz
