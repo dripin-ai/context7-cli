@@ -12,7 +12,9 @@
 #     -> false
 #
 # So `npm test` runs on the Node versions whose test runner can host the harness, and
-# the floor claim is tested where it actually lives: against the CLI itself.
+# the floor claim is tested where it actually lives: against the shipped code. lib/api.js
+# needs only 18.0.0 of its own (fetch; AbortSignal.timeout is 17.3.0 and `{ cause }` is
+# 16.9.0), so util.parseArgs in bin/c7.js is what sets the floor at 18.3.0.
 #
 # What this workflow does NOT cover, and stays the reviewer's job: no lint, no coverage
 # threshold, no publish, no secrets, and no test touches the live Context7 API — every
@@ -44,7 +46,7 @@ jobs:
       - run: npm test
 
   engines-floor:
-    name: the CLI runs on the engines.node floor (18.3.0)
+    name: the shipped code runs on the engines.node floor (18.3.0)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -58,3 +60,5 @@ jobs:
           node bin/c7.js --version | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
           node bin/c7.js --help | grep -q 'c7 resolve <query>'
           ! node bin/c7.js --tokens abc 2>/dev/null
+      - name: lib/api.js makes a real request on the floor
+        run: node scripts/engines-floor.js
