@@ -77,7 +77,7 @@ success or failure and read stderr for the reason.
 
 | Code | Meaning | Example trigger | Set at |
 |------|---------|-----------------|--------|
-| `0` | `--help`, `--version`, no arguments, or the command printed what was asked for | `c7 --help` · `c7 docs /vercel/next.js routing` | `bin/c7.js:160`, `:169`; no explicit exit at `:81`, `:85`, `:121` — `main()` returns |
+| `0` | `--help`, `--version`, no arguments, or the command printed what was asked for | `c7 --help` · `c7 docs /vercel/next.js routing` | `bin/c7.js:160`, `:169`; no explicit exit — `main()` returns |
 | `1` | Usage error: unknown flag, bad `--tokens`, a missing or blank argument, `--json` outside `resolve`, a subcommand typo | `c7 --tokens abc` · `c7 docs react --json` · `c7 reslove react` | `bin/c7.js:41` (`usage()`) |
 | `1` | Nothing usable came back: no match, a best match without a library ID, or a response carrying no documentation | `c7 resolve zzzznope` · JSON with neither `snippets` nor `content` | `bin/c7.js:91`, `:104`, `:111`, `:119` (the last via `lib/api.js`) |
 | `1` | Upstream or install failure: invalid library ID, timeout, network error, HTTP status, malformed JSON, non-documentation content-type, unreadable `package.json` | `c7 docs /vercel/next.js` without a valid key (401) | `lib/api.js` → `bin/c7.js:210`; `bin/c7.js:130` |
