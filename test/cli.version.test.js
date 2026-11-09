@@ -28,7 +28,7 @@ test('-v prints the same version', () => {
 test('--version fails with a clear message when package.json is missing', t => {
   // A copy of bin/ and lib/ without a root package.json. The per-directory
   // {"type":"module"} files only keep the ESM loader happy; the version lookup in
-  // bin/c7.js:116 resolves to the missing root file, which is the path under test.
+  // bin/c7.js resolves to the missing root file, which is the path under test.
   const dir = mkdtempSync(join(tmpdir(), 'c7-no-pkg-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   for (const sub of ['bin', 'lib']) {

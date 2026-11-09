@@ -86,13 +86,13 @@ test('an empty JSON body is an error, not empty documentation', async t => {
 
 test('an empty markdown body yields no documentation', async t => {
   useFetch(t, () => text('', 'text/markdown'));
-  // The API layer returns the empty string; bin/c7.js:107 turns it into exit 1.
+  // The API layer returns the empty string; the CLI turns it into exit 1.
   // Pinned on both levels — see "no docs found" in test/cli.dispatch.test.js.
   assert.equal(await getDocs(ID), '');
 });
 
 // An envelope carrying neither snippets nor content is not documentation. It yields the
-// empty string, which bin/c7.js:116 turns into "No docs found" and exit 1 — the same exit
+// empty string, which the CLI turns into "No docs found" and exit 1 — the same exit
 // as an empty markdown body. Printing the raw JSON passed it off as docs at exit 0.
 test('empty snippets yield no documentation, not the raw envelope', async t => {
   useFetch(t, () => json({ snippets: [] }));

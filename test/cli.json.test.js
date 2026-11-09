@@ -127,7 +127,7 @@ test('a network failure prints both the error and its cause', () => {
 });
 
 test('the resolution hint goes to stderr, never into the piped docs', () => {
-  // stderr is not a TTY in a spawned child, so bin/c7.js:103 stays silent — stdout must
+  // stderr is not a TTY in a spawned child, so the TTY-gated hint stays silent — stdout must
   // carry documentation only, so that `c7 docs react | pbcopy` is safe.
   const run = runCli(['react'], { stub: stubSearchAndDocs([{ id: '/x/react' }]) });
   assert.equal(run.code, 0);

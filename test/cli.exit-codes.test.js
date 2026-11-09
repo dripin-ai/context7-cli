@@ -32,10 +32,10 @@ test('exit 0: a closed pipe is not an error', () => {
   assert.equal(pipedExit(['docs', '/a/b'], BIG_DOCS, 'head -c 10'), '0');
 });
 
-// DELIBERATE EQUALITY, pinned not resolved (see the comment at lib/api.js:85-88): a JSON
-// envelope carrying neither `snippets` nor `content` is "no documentation", and it leaves
-// by the same door as an empty markdown body. Same code, same message, byte for byte.
-// Printing the envelope instead would pass it off as docs at exit 0.
+// DELIBERATE EQUALITY, pinned not resolved (see the comment on lib/api.js's `return ''`):
+// a JSON envelope carrying neither `snippets` nor `content` is "no documentation", and it
+// leaves by the same door as an empty markdown body. Same code, same message, byte for
+// byte. Printing the envelope instead would pass it off as docs at exit 0.
 test('exit 1: an empty markdown body and a contentless JSON envelope are indistinguishable', () => {
   const emptyBody = runCli(['docs', '/reactjs/react.dev'], { stub: markdown('') });
   const envelope = runCli(['docs', '/reactjs/react.dev'], {
@@ -50,7 +50,7 @@ test('exit 1: an empty markdown body and a contentless JSON envelope are indisti
 });
 
 // bin/c7.js:130 (--version with an unreadable package.json) needs a tree without a
-// package.json; it is pinned where that tree is already built: test/cli.version.test.js:43.
+// package.json; it is pinned where that tree is already built: test/cli.version.test.js.
 
 // The contract is "0 and 1, nothing else", and it covers the whole shipped surface:
 // bin/c7.js ends the process, lib/api.js throws and never does.
