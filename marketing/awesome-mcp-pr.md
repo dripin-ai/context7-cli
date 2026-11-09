@@ -22,7 +22,7 @@ c7 nextjs "app router" | grep "layout"
 
 - Zero dependencies, ~170 lines
 - Works without API key
-- npm: [@vedanth/context7](https://www.npmjs.com/package/@vedanth/context7)
+- npm: [@dripin-ai/context7-cli](https://www.npmjs.com/package/@dripin-ai/context7-cli)
 - Website: [c7.akarispeed.xyz](https://c7.akarispeed.xyz/)
 
 ### Category

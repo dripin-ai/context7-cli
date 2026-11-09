@@ -55,10 +55,10 @@ No server. No config. No IDE plugin.
 
 Try it, no install needed:
 
-npx @vedanth/context7 hono "routing"
+npx @dripin-ai/context7-cli hono "routing"
 
 GitHub: github.com/VedanthB/context7-cli
-npm: npmjs.com/package/@vedanth/context7
+npm: npmjs.com/package/@dripin-ai/context7-cli
 Website: c7.akarispeed.xyz
 
 #webdev #ai #cli #opensource

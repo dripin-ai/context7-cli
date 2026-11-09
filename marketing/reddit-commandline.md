@@ -44,11 +44,11 @@ c7 hono "routing" | ollama run deepseek-coder "explain"
 **Install:**
 
 ```bash
-npx @vedanth/context7           # Run without installing
-npm install -g @vedanth/context7 # Or install globally for `c7`
+npx @dripin-ai/context7-cli           # Run without installing
+npm install -g @dripin-ai/context7-cli # Or install globally for `c7`
 ```
 
 Source: https://github.com/VedanthB/context7-cli
-npm: https://www.npmjs.com/package/@vedanth/context7
+npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
 Website: https://c7.akarispeed.xyz/
 Author: https://akarispeed.xyz

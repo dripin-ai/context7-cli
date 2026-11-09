@@ -1,12 +1,12 @@
 # c7 — Context7 CLI
 
-[![npm version](https://img.shields.io/npm/v/@vedanth/context7)](https://www.npmjs.com/package/@vedanth/context7) [![npm downloads](https://img.shields.io/npm/dm/@vedanth/context7)](https://www.npmjs.com/package/@vedanth/context7) [![license](https://img.shields.io/npm/l/@vedanth/context7)](./LICENSE) [![node](https://img.shields.io/node/v/@vedanth/context7)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/@dripin-ai/context7-cli)](https://www.npmjs.com/package/@dripin-ai/context7-cli) [![npm downloads](https://img.shields.io/npm/dm/@dripin-ai/context7-cli)](https://www.npmjs.com/package/@dripin-ai/context7-cli) [![license](https://img.shields.io/npm/l/@dripin-ai/context7-cli)](./LICENSE) [![node](https://img.shields.io/node/v/@dripin-ai/context7-cli)](https://nodejs.org)
 
 Get up-to-date, version-specific library docs from your terminal. No MCP client needed.
 
 Built on top of [Context7](https://context7.com) — the same docs that power Cursor, Claude, and other AI coding assistants, now available as a simple CLI.
 
-> **Note:** This package is published as [`@vedanth/context7`](https://www.npmjs.com/package/@vedanth/context7) on npm. The unscoped `context7` on npm is a different, unrelated project.
+> **Note:** This package is published as [`@dripin-ai/context7-cli`](https://www.npmjs.com/package/@dripin-ai/context7-cli) on npm. The unscoped `context7` and `context7-cli` on npm are different, unrelated projects, which is why this package is scoped.
 
 > **Fork:** This repository is a fork of [`VedanthB/context7-cli`](https://github.com/VedanthB/context7-cli) and tracks it. It hardens the CLI's argument and URL handling: library IDs are validated and percent-encoded instead of being interpolated into the request path, `--tokens` and unknown flags are validated via `util.parseArgs`, requests time out, non-documentation responses are no longer printed as docs, `--json` is resolve-only, and `c7 resolve` searches the whole query.
 
@@ -23,8 +23,8 @@ Context7 has great docs data, but their MCP server only works inside Cursor and 
 ## Install
 
 ```bash
-npx @vedanth/context7               # Run directly (no install)
-npm install -g @vedanth/context7     # Or install globally
+npx @dripin-ai/context7-cli            # Run directly (no install)
+npm install -g @dripin-ai/context7-cli # Or install globally
 ```
 
 ## Usage
@@ -159,7 +159,7 @@ Powered by [Context7](https://context7.com) by [Upstash](https://upstash.com).
 
 | Package | What it is |
 |---------|------------|
-| **`@vedanth/context7`** (this) | CLI tool — library docs in your terminal |
+| **`@dripin-ai/context7-cli`** (this) | CLI tool — library docs in your terminal |
 | `@upstash/context7` | Official MCP server for AI editors |
 | `context7` (unscoped) | Different project, not related |
 

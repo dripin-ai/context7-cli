@@ -105,7 +105,7 @@ The `--tokens` flag is worth highlighting. If you're running a local model with 
 
 | | MCP Server | c7 CLI |
 |---|---|---|
-| **Setup** | Install server, configure MCP client, restart editor | `npx @vedanth/context7` |
+| **Setup** | Install server, configure MCP client, restart editor | `npx @dripin-ai/context7-cli` |
 | **Works in** | MCP-compatible editors | Terminal, scripts, CI, anywhere |
 | **Composable** | Limited to MCP protocol | Pipes, redirects, subshells |
 | **Token overhead** | Thousands for tool definitions | Zero |
@@ -127,10 +127,10 @@ We're watching a correction happen in real time. MCP was over-applied. For tools
 
 ```bash
 # Run without installing
-npx @vedanth/context7 tailwindcss "grid"
+npx @dripin-ai/context7-cli tailwindcss "grid"
 
 # Or install globally
-npm install -g @vedanth/context7
+npm install -g @dripin-ai/context7-cli
 c7 drizzle "relations"
 c7 hono "context" --tokens 3000
 c7 tailwindcss "dark mode" | less
@@ -141,7 +141,7 @@ No API key required for basic usage. For higher rate limits, get a free key at [
 ## Links
 
 - **GitHub:** [github.com/VedanthB/context7-cli](https://github.com/VedanthB/context7-cli)
-- **npm:** [@vedanth/context7](https://www.npmjs.com/package/@vedanth/context7)
+- **npm:** [@dripin-ai/context7-cli](https://www.npmjs.com/package/@dripin-ai/context7-cli)
 - **Landing page:** [c7.akarispeed.xyz](https://c7.akarispeed.xyz/)
 - **Context7:** [context7.com](https://context7.com)
 

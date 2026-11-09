@@ -22,9 +22,9 @@ c7 svelte "reactivity" | grep "rune"
 
 170 lines of Node.js, zero dependencies. Works without an API key.
 
-Install: `npx @vedanth/context7`
+Install: `npx @dripin-ai/context7-cli`
 
 GitHub: https://github.com/VedanthB/context7-cli
-npm: https://www.npmjs.com/package/@vedanth/context7
+npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
 Website: https://c7.akarispeed.xyz/
 Author: https://akarispeed.xyz

@@ -47,12 +47,12 @@ Zero dependencies, pure Node.js, ~170 lines. No API key required for basic usage
 **Install:**
 
 ```bash
-npx @vedanth/context7 vue "composition api"   # Zero install, runs immediately
-npm install -g @vedanth/context7               # Or install globally
+npx @dripin-ai/context7-cli vue "composition api"   # Zero install, runs immediately
+npm install -g @dripin-ai/context7-cli               # Or install globally
 ```
 
 - GitHub: https://github.com/VedanthB/context7-cli
-- npm: https://www.npmjs.com/package/@vedanth/context7
+- npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
 - Landing page: https://c7.akarispeed.xyz/
 - Author: https://akarispeed.xyz
 
