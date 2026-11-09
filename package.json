@@ -34,6 +34,9 @@
   },
   "author": "Vedanth Bora",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.3.0"
   }
