@@ -2,7 +2,7 @@
 name: context7-resolve
 description: Find Context7 library IDs for a given library name. Use when you need to resolve library names to their Context7 identifiers for documentation retrieval.
 license: MIT
-compatibility: Requires Node.js >=18. The @dripin-ai/context7-cli CLI can be installed globally, installed as a project dependency, or used via npx (zero install).
+compatibility: Requires Node.js >=18. The @dripin-ai/context7-cli package can be installed globally, installed as a project dependency, or used via npx (zero install).
 metadata:
   author: Kilo
   version: "1.0.1"
