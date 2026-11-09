@@ -18,7 +18,8 @@
 #
 # What this workflow does NOT cover, and stays the reviewer's job: no lint, no coverage
 # threshold, no publish, no secrets, and no test touches the live Context7 API — every
-# request is stubbed, so a green run says nothing about the upstream API being healthy.
+# request is stubbed or answered by a loopback server, so a green run says nothing about
+# the upstream API being healthy.
 
 name: CI
 
@@ -53,12 +54,16 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 18.3.0
-      - name: util.parseArgs is available
-        run: node -e "import('node:util').then(m => { if (typeof m.parseArgs !== 'function') process.exit(1); })"
+      - name: the runner is on the floor and util.parseArgs is available
+        # Without the version check every step below would pass on any modern Node and the
+        # job would prove nothing about 18.3.0.
+        run: |
+          node -v | grep -Eq '^v18\.3\.0$'
+          node -e "import('node:util').then(m => { if (typeof m.parseArgs !== 'function') process.exit(1); })"
       - name: --version, --help and a usage error work without a request
         run: |
           node bin/c7.js --version | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
           node bin/c7.js --help | grep -q 'c7 resolve <query>'
           ! node bin/c7.js --tokens abc 2>/dev/null
-      - name: lib/api.js makes a real request on the floor
+      - name: lib/api.js runs its request path on the floor, against a loopback server
         run: node scripts/engines-floor.js

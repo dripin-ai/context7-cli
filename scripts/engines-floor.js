@@ -19,8 +19,13 @@ const origin = `http://127.0.0.1:${server.address().port}/api/v1`;
 // fetch would prove nothing about either running on the floor.
 const native = globalThis.fetch;
 globalThis.fetch = (url, init) => {
+  const local = String(url).replace('https://context7.com/api/v1', origin);
+  // Unmatched prefix means the rewrite is stale and the native fetch would hit the live
+  // API instead — measured once: it answered with real library data and the run looked
+  // like a pass. Fail here rather than leave the floor job talking to context7.com.
+  assert.ok(local.startsWith(origin), `must stay on the loopback server, got ${url}`);
   assert.ok(init.signal instanceof AbortSignal, 'lib/api.js must pass an AbortSignal');
-  return native(String(url).replace('https://context7.com/api/v1', origin), init);
+  return native(local, init);
 };
 
 assert.deepEqual(await resolve('x'), [{ id: '/a/b' }], 'fetch + AbortSignal.timeout');
