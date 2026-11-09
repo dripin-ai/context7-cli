@@ -209,21 +209,25 @@ test('exit 1: an empty markdown body and a contentless JSON envelope are indisti
 // and fails.
 const PERMITTED_EXIT = /process\.exit\([01]\)/g;
 
-// Per shipped file: how many permitted exits it has, and the `process` members it reads.
-// The counts are the nine rows of the map above; a tenth exit must earn a row before it
-// can turn this green again.
+// Per shipped file: the lines its permitted exits sit on, and the `process` members it
+// reads. Lines, not a count, because the `at:` fields above and the README table name
+// them — pinning them here is what keeps both honest when an insertion shifts the file.
+// A tenth exit must earn a row before it can turn this green again.
 const SHIPPED = [
-  { file: 'bin/c7.js', exits: 9, reads: ['argv', 'env', 'stderr'] },
-  { file: 'lib/api.js', exits: 0, reads: [] },
+  { file: 'bin/c7.js', exitLines: [41, 91, 104, 111, 119, 130, 160, 169, 210], reads: ['argv', 'env', 'stderr'] },
+  { file: 'lib/api.js', exitLines: [], reads: [] },
 ];
 
-for (const { file, exits, reads } of SHIPPED) {
+for (const { file, exitLines, reads } of SHIPPED) {
   test(`${file} ends the process only via process.exit(0) and process.exit(1)`, () => {
     const source = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
-    assert.equal(
-      (source.match(PERMITTED_EXIT) ?? []).length,
-      exits,
-      `${file}: expected ${exits} process.exit(0|1) calls — the scan, or the exit map, changed`,
+    const found = [...source.matchAll(PERMITTED_EXIT)].map(
+      m => source.slice(0, m.index).split('\n').length,
+    );
+    assert.deepEqual(
+      found,
+      exitLines,
+      `${file}: process.exit(0|1) no longer sits on the lines the map and the README name`,
     );
     const leftover = [
       ...source.replace(PERMITTED_EXIT, '').matchAll(/process(?:\.(\w+))?/g),
