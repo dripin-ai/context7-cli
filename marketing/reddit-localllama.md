@@ -42,7 +42,7 @@ c7 drizzle "relations" | pbcopy  # copy to clipboard
 - Works with Ollama, llama.cpp, text-generation-webui, koboldcpp, anything that reads stdin.
 - No server process eating your GPU's VRAM.
 
-Zero dependencies, pure Node.js, ~170 lines. No API key required for basic usage.
+Zero dependencies, pure Node.js, ~310 lines. No API key required for basic usage.
 
 **Install:**
 
@@ -51,9 +51,9 @@ npx @dripin-ai/context7-cli vue "composition api"   # Zero install, runs immedia
 npm install -g @dripin-ai/context7-cli               # Or install globally
 ```
 
-- GitHub: https://github.com/VedanthB/context7-cli
+- GitHub: https://github.com/dripin-ai/context7-cli
 - npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
-- Landing page: https://c7.akarispeed.xyz/
+- Landing page: https://dripin-ai.github.io/context7-cli/
 - Author: https://akarispeed.xyz
 
 If you're running local models with tight context windows, the difference between 13.7k tokens of MCP overhead and 0 tokens of CLI overhead is the difference between fitting the docs in context or not.

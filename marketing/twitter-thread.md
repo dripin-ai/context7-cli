@@ -12,9 +12,9 @@ Peter Steinberger (190k GitHub stars, hired by OpenAI): "mcp were a mistake. bas
 
 8+ blog posts in Feb 2026 alone arguing CLIs beat MCP servers.
 
-So I built c7 — library docs piped to stdout for any LLM. 170 lines, zero deps.
+So I built c7 — library docs piped to stdout for any LLM. 310 lines, zero deps.
 
-github.com/VedanthB/context7-cli
+github.com/dripin-ai/context7-cli
 
 ---
 
@@ -57,8 +57,8 @@ Try it, no install needed:
 
 npx @dripin-ai/context7-cli hono "routing"
 
-GitHub: github.com/VedanthB/context7-cli
+GitHub: github.com/dripin-ai/context7-cli
 npm: npmjs.com/package/@dripin-ai/context7-cli
-Website: c7.akarispeed.xyz
+Website: dripin-ai.github.io/context7-cli
 
 #webdev #ai #cli #opensource

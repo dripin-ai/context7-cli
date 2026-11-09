@@ -31,7 +31,7 @@ Even Anthropic, who created MCP, published an engineering blog acknowledging the
 
 Context7 indexes documentation from library source repos. They have an MCP server that feeds this into Cursor and Claude Code, but it requires an MCP-compatible client. If you're in a terminal, writing a script, or running a local model, you're locked out.
 
-I built [`c7`](https://github.com/VedanthB/context7-cli), a CLI that pulls from the same Context7 database and outputs docs as plain text to stdout.
+I built [`c7`](https://github.com/dripin-ai/context7-cli), a CLI that pulls from the same Context7 database and outputs docs as plain text to stdout.
 
 ```bash
 c7 tailwindcss "dark mode"
@@ -48,7 +48,7 @@ The CLI does two things:
 1. Resolves a library name to a Context7 ID (e.g., `react` -> `/facebook/react`)
 2. Fetches documentation for that library, filtered by topic
 
-Under the hood it's two API calls using Node.js built-in `fetch`. The entire project is ~170 lines across two files with zero dependencies.
+Under the hood it's two API calls using Node.js built-in `fetch`. The entire project is ~310 lines across two files with zero dependencies.
 
 ```
 bin/c7.js   — 130 lines (CLI parsing + output formatting)
@@ -140,9 +140,9 @@ No API key required for basic usage. For higher rate limits, get a free key at [
 
 ## Links
 
-- **GitHub:** [github.com/VedanthB/context7-cli](https://github.com/VedanthB/context7-cli)
+- **GitHub:** [github.com/dripin-ai/context7-cli](https://github.com/dripin-ai/context7-cli)
 - **npm:** [@dripin-ai/context7-cli](https://www.npmjs.com/package/@dripin-ai/context7-cli)
-- **Landing page:** [c7.akarispeed.xyz](https://c7.akarispeed.xyz/)
+- **Landing page:** [dripin-ai.github.io/context7-cli](https://dripin-ai.github.io/context7-cli/)
 - **Context7:** [context7.com](https://context7.com)
 
 ## Further reading
