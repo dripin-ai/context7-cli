@@ -1,10 +1,12 @@
-// The exit-code contract. Every way bin/c7.js can end the process has a row here, and
-// each row names the line that sets the code. If a code moves, this file goes red.
+// The exit-code contract. Every way bin/c7.js can end the process has a row here except
+// one — bin/c7.js:130 needs a tree without a package.json and is pinned in
+// test/cli.version.test.js:43 (noted again at the bottom). Each row names the line that
+// sets the code, so if a code moves, this file goes red.
 //
-// The CLI defines exactly two codes — 0 and 1 — and the last test in this file holds
-// that line against the source itself, so an exit code added on a path no row covers
-// cannot slip in silently. A third code means the README table and this file must grow
-// with it; it is not a free change.
+// The CLI defines exactly two codes — 0 and 1 — and the two source guards at the bottom
+// hold that line against bin/c7.js and lib/api.js themselves, so an exit code added on a
+// path no row covers cannot slip in silently. A third code means the README table and
+// this file must grow with it; it is not a free change.
 //
 // Offline like the rest of test/: every run carries a stubbed fetch, and the rows that
 // must not reach the network run under the default NO_FETCH stub plus assertNoLiveRequest.
@@ -12,7 +14,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { runCli, assertNoLiveRequest, fetchStub, stubSearchAndDocs, CLI } from './helpers/cli.js';
+import { runCli, assertNoLiveRequest, fetchStub, stubSearchAndDocs } from './helpers/cli.js';
 
 const markdown = body => fetchStub([{ contentType: 'text/markdown', body }]);
 const asJson = body => fetchStub([{ contentType: 'application/json', body }]);
@@ -195,11 +197,41 @@ test('exit 1: an empty markdown body and a contentless JSON envelope are indisti
 // cannot be driven from this repo's own tree — it needs a tree without a package.json.
 // It is pinned where that tree is already built: test/cli.version.test.js:43.
 
-// The contract is "0 and 1, nothing else". Held against the source so a code added on a
-// path with no row above still fails here.
-test('bin/c7.js sets no exit code other than 0 and 1', () => {
-  const source = readFileSync(CLI, 'utf8');
-  const codes = [...source.matchAll(/process\.exit\(([^)]*)\)/g)].map(m => m[1].trim());
-  assert.notEqual(codes.length, 0, 'no process.exit() found — the regex, not the CLI, changed');
-  assert.deepEqual([...new Set(codes)].sort(), ['0', '1']);
-});
+// The contract is "0 and 1, nothing else", and it covers the whole shipped surface:
+// bin/c7.js ends the process, lib/api.js throws and never does. Held against the source
+// because the table above can only cover paths someone thought of.
+//
+// WHY not just collect the argument of every `process.exit(...)`: that reads a count as a
+// structural claim, and three forms walk past it — `process.exitCode = 2`,
+// `process['exit'](2)`, and `const e = process.exit; e(2)`. So instead: strip the two
+// permitted literal calls, then allow-list every `process` member that survives. Anything
+// else — a computed exit, a bracket access, an alias, a bare destructure — is left over
+// and fails.
+const PERMITTED_EXIT = /process\.exit\([01]\)/g;
+
+// Per shipped file: how many permitted exits it has, and the `process` members it reads.
+// The counts are the nine rows of the map above; a tenth exit must earn a row before it
+// can turn this green again.
+const SHIPPED = [
+  { file: 'bin/c7.js', exits: 9, reads: ['argv', 'env', 'stderr'] },
+  { file: 'lib/api.js', exits: 0, reads: [] },
+];
+
+for (const { file, exits, reads } of SHIPPED) {
+  test(`${file} ends the process only via process.exit(0) and process.exit(1)`, () => {
+    const source = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.equal(
+      (source.match(PERMITTED_EXIT) ?? []).length,
+      exits,
+      `${file}: expected ${exits} process.exit(0|1) calls — the scan, or the exit map, changed`,
+    );
+    const leftover = [
+      ...source.replace(PERMITTED_EXIT, '').matchAll(/process(?:\.(\w+))?/g),
+    ].map(m => m[1] ?? '(process, reached some other way)');
+    assert.deepEqual(
+      [...new Set(leftover)].sort(),
+      reads,
+      `${file} touches \`process\` outside the exit map — a path with no row above may end the process`,
+    );
+  });
+}
