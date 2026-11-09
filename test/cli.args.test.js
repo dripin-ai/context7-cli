@@ -201,7 +201,7 @@ for (const args of [['resolve', ''], ['resolve', '   '], ['r', '']]) {
   });
 }
 
-for (const args of [['docs', ''], ['']]) {
+for (const args of [['docs', ''], ['docs', '   '], ['']]) {
   test(`an empty library name is refused without a request: ${JSON.stringify(args)}`, () => {
     const run = runCli(args);
     assertNoLiveRequest(run);

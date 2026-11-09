@@ -77,18 +77,10 @@ success or failure and read stderr for the reason.
 
 | Code | Meaning | Example trigger | Set at |
 |------|---------|-----------------|--------|
-| `0` | `--help`, `--version`, or `c7` with no arguments | `c7 --help` | `bin/c7.js:160`, `bin/c7.js:169` |
-| `0` | The command printed what was asked for | `c7 docs /vercel/next.js routing` | no explicit exit — `bin/c7.js:81`, `bin/c7.js:85`, `bin/c7.js:121` |
-| `1` | Usage error: unknown flag, bad `--tokens`, missing argument, `--json` outside `resolve`, a subcommand typo | `c7 --tokens abc` · `c7 docs react --json` · `c7 reslove react` | `bin/c7.js:41` (`usage()`) |
-| `1` | Nothing matched the query | `c7 resolve zzzznope` | `bin/c7.js:91`, `bin/c7.js:104` |
-| `1` | The best match carries no library ID | a `/search` hit without an `id` field | `bin/c7.js:111` |
-| `1` | No docs found — the response carried no documentation | an empty body, or JSON with neither `snippets` nor `content` | `lib/api.js:88` → `bin/c7.js:119` |
-| `1` | Upstream failure: invalid library ID, timeout, network error, HTTP status, malformed JSON, non-documentation content-type | `c7 docs /vercel/next.js` without a valid key (401) | `lib/api.js:25`/`:42`/`:47`/`:49`/`:74`/`:93` → `bin/c7.js:210` |
-| `1` | `--version` cannot read `package.json` | a broken install | `bin/c7.js:130` |
-
-Every row is pinned in [`test/cli.exit-codes.test.js`](./test/cli.exit-codes.test.js) —
-the last row in [`test/cli.version.test.js`](./test/cli.version.test.js), which is where a
-tree without a `package.json` is already built — so moving a code breaks the suite.
+| `0` | `--help`, `--version`, no arguments, or the command printed what was asked for | `c7 --help` · `c7 docs /vercel/next.js routing` | `bin/c7.js:160`, `:169`; no explicit exit at `:81`, `:85`, `:121` — `main()` returns |
+| `1` | Usage error: unknown flag, bad `--tokens`, a missing or blank argument, `--json` outside `resolve`, a subcommand typo | `c7 --tokens abc` · `c7 docs react --json` · `c7 reslove react` | `bin/c7.js:41` (`usage()`) |
+| `1` | Nothing usable came back: no match, a best match without a library ID, or a response carrying no documentation | `c7 resolve zzzznope` · JSON with neither `snippets` nor `content` | `bin/c7.js:91`, `:104`, `:111`, `:119` (the last via `lib/api.js:88`) |
+| `1` | Upstream or install failure: invalid library ID, timeout, network error, HTTP status, malformed JSON, non-documentation content-type, unreadable `package.json` | `c7 docs /vercel/next.js` without a valid key (401) | `lib/api.js:25`/`:42`/`:47`/`:49`/`:74`/`:93` → `bin/c7.js:210`; `bin/c7.js:130` |
 
 Two notes for scripting:
 
@@ -101,9 +93,7 @@ c7 resolve nope --json   # prints [] on stdout, exits 1
 ```
 
 **"No docs found" and an empty document are the same exit.** A JSON envelope carrying
-neither `snippets` nor `content` is not documentation, so it leaves by the same door as an
-empty markdown body: exit `1`, `No docs found` on stderr. Printing the envelope would pass
-it off as docs at exit `0`.
+neither `snippets` nor `content` is not documentation: exit `1`, `No docs found` on stderr.
 
 A closed pipe is not an error: `c7 docs react | head -1` exits `0`.
 
