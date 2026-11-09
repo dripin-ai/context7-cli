@@ -51,8 +51,8 @@ The CLI does two things:
 Under the hood it's two API calls using Node.js built-in `fetch`. The entire project is ~310 lines across two files with zero dependencies.
 
 ```
-bin/c7.js   — 130 lines (CLI parsing + output formatting)
-lib/api.js  —  40 lines (Context7 API client)
+bin/c7.js   — 214 lines (CLI parsing + output formatting)
+lib/api.js  —  96 lines (Context7 API client)
 ```
 
 No axios. No commander. No chalk. Just `process.argv` and `fetch`.
