@@ -1,5 +1,5 @@
 {
-  "name": "@vedanth/context7",
+  "name": "@dripin-ai/context7-cli",
   "version": "1.0.3",
   "description": "CLI for Context7 — get up-to-date, version-specific library docs from your terminal",
   "type": "module",
@@ -21,19 +21,22 @@
     "mcp",
     "library"
   ],
-  "homepage": "https://c7.akarispeed.xyz/",
+  "homepage": "https://github.com/dripin-ai/context7-cli#readme",
   "bugs": {
-    "url": "https://github.com/VedanthB/context7-cli/issues"
+    "url": "https://github.com/dripin-ai/context7-cli/issues"
   },
   "scripts": {
     "test": "node --test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VedanthB/context7-cli.git"
+    "url": "git+https://github.com/dripin-ai/context7-cli.git"
   },
   "author": "Vedanth Bora",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.3.0"
   }

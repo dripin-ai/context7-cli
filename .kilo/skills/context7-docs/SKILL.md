@@ -2,7 +2,7 @@
 name: context7-docs
 description: Get documentation for a library from Context7. Use when you need up-to-date library documentation, API references, code examples, or specific topic information from Context7.
 license: MIT
-compatibility: Requires Node.js >=18. The @vedanth/context7 CLI can be installed globally, installed as a project dependency, or used via npx (zero install).
+compatibility: Requires Node.js >=18. The @dripin-ai/context7-cli package can be installed globally, installed as a project dependency, or used via npx (zero install).
 metadata:
   author: Kilo
   version: "1.0.1"

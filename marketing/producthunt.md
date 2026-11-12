@@ -39,15 +39,15 @@ c7 prisma schema | less
 
 ### Under the hood
 
-The entire install is `npx @vedanth/context7`. No server, no config, no IDE plugin. It's 170 lines of pure Node.js with zero npm dependencies, using just built-in `fetch` to query Context7's live documentation database. Because it outputs plain text to stdout, it composes naturally with pipes, redirects, and subshells. Same data that powers the Context7 MCP server in Cursor, without requiring an MCP client.
+The entire install is `npx @dripin-ai/context7-cli`. No server, no config, no IDE plugin. It's 310 lines of pure Node.js with zero npm dependencies, using just built-in `fetch` to query Context7's live documentation database. Because it outputs plain text to stdout, it composes naturally with pipes, redirects, and subshells. Same data that powers the Context7 MCP server in Cursor, without requiring an MCP client.
 
 ### Links
 
-- **Install:** `npm install -g @vedanth/context7`
-- **Try now:** `npx @vedanth/context7 prisma "relations"`
-- **GitHub:** https://github.com/VedanthB/context7-cli
-- **npm:** https://www.npmjs.com/package/@vedanth/context7
-- **Website:** https://c7.akarispeed.xyz/
+- **Install:** `npm install -g @dripin-ai/context7-cli`
+- **Try now:** `npx @dripin-ai/context7-cli prisma "relations"`
+- **GitHub:** https://github.com/dripin-ai/context7-cli
+- **npm:** https://www.npmjs.com/package/@dripin-ai/context7-cli
+- **Website:** https://dripin-ai.github.io/context7-cli/
 - **Author:** https://akarispeed.xyz
 
 ## Maker Comment
@@ -60,4 +60,4 @@ So I built the CLI version. It's just a pipe. It outputs text. What you do with 
 
 The 35x token reduction over MCP isn't theoretical. Reinhard's benchmarks showed real-world MCP calls eating 145k tokens where a CLI command used 4.1k. When you're paying per token or running a model with limited context, that gap is the whole ballgame.
 
-Try it: `npx @vedanth/context7 prisma "relations"`
+Try it: `npx @dripin-ai/context7-cli prisma "relations"`

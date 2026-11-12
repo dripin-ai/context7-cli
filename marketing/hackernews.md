@@ -4,7 +4,7 @@
 
 **Title:** Show HN: c7 – Pipe up-to-date library docs into any LLM from the terminal
 
-**URL:** https://github.com/VedanthB/context7-cli
+**URL:** https://github.com/dripin-ai/context7-cli
 
 **First comment:**
 
@@ -20,11 +20,11 @@ c7 zod "schemas" | ollama run deepseek-coder "explain"
 c7 svelte "reactivity" | grep "rune"
 ```
 
-170 lines of Node.js, zero dependencies. Works without an API key.
+310 lines of Node.js, zero dependencies. Works without an API key.
 
-Install: `npx @vedanth/context7`
+Install: `npx @dripin-ai/context7-cli`
 
-GitHub: https://github.com/VedanthB/context7-cli
-npm: https://www.npmjs.com/package/@vedanth/context7
-Website: https://c7.akarispeed.xyz/
+GitHub: https://github.com/dripin-ai/context7-cli
+npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
+Website: https://dripin-ai.github.io/context7-cli/
 Author: https://akarispeed.xyz

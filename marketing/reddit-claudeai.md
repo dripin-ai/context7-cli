@@ -33,26 +33,26 @@ claude "Build a middleware using these docs:\n$DOCS"
 
 | | MCP Server | c7 CLI |
 |---|---|---|
-| Setup | Install server, configure client, restart editor | `npx @vedanth/context7` |
+| Setup | Install server, configure client, restart editor | `npx @dripin-ai/context7-cli` |
 | Works in | MCP-compatible editors only | Terminal, scripts, CI, anywhere |
 | Pipe to tools | No | Yes — grep, jq, less, any LLM |
 | Token overhead | Thousands for tool definitions | Zero — just the docs you asked for |
 | Dependencies | Several | Zero |
 
-It's ~170 lines of pure Node.js with zero dependencies. The whole thing just uses `fetch` to hit Context7's public API.
+It's ~310 lines of pure Node.js with zero dependencies. The whole thing just uses `fetch` to hit Context7's public API.
 
 **Install:**
 
 ```bash
-npx @vedanth/context7 prisma "findMany"   # No install needed
-npm install -g @vedanth/context7           # Or install globally for `c7` command
+npx @dripin-ai/context7-cli prisma "findMany"   # No install needed
+npm install -g @dripin-ai/context7-cli           # Or install globally for `c7` command
 ```
 
 Works without an API key for basic usage.
 
-- GitHub: https://github.com/VedanthB/context7-cli
-- npm: https://www.npmjs.com/package/@vedanth/context7
-- Landing page: https://c7.akarispeed.xyz/
+- GitHub: https://github.com/dripin-ai/context7-cli
+- npm: https://www.npmjs.com/package/@dripin-ai/context7-cli
+- Landing page: https://dripin-ai.github.io/context7-cli/
 - Author: https://akarispeed.xyz
 
 For anyone dealing with context window limits on Claude, the token savings alone make the CLI approach worth trying. I've been using it mostly for framework docs where the API surface changes between versions (Next.js, Prisma, Hono).
