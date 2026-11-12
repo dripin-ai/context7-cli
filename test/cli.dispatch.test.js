@@ -1,4 +1,4 @@
-// Command dispatch and the near-miss rule (bin/c7.js:58-63): a first positional that is
+// Command dispatch and the near-miss rule (bin/c7.js): a first positional that is
 // within 2 edits of `resolve`/`docs` and within 1 character of its length is treated as a
 // typo'd subcommand, not as a library.
 
@@ -124,7 +124,7 @@ test('the near-miss check is case-insensitive', () => {
   assert.match(run.stderr, /did you mean "c7 resolve"\?/);
 });
 
-// Dispatch (bin/c7.js:165) is case-sensitive, the near-miss check is not: an upper-case
+// Dispatch (bin/c7.js) is case-sensitive, the near-miss check is not: an upper-case
 // subcommand is therefore not silently turned into a library lookup — it errors with the
 // hint. That is the desirable half of the inconsistency; pinned so it stays that way.
 test('an upper-case subcommand errors instead of becoming a library lookup', () => {

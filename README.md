@@ -71,15 +71,31 @@ c7 docs nextjs "api routes" | llm "summarize these docs"
 
 ## Exit codes
 
-`0` on success, `1` on anything else: a usage error, no match, or an upstream failure.
+`c7` defines exactly two codes. There is no third one: every failure — a mistyped flag, a
+library that does not exist, an expired API key, a timeout — is `1`. Scripts branch on
+success or failure and read stderr for the reason.
 
-An empty result is exit `1` in both output modes. With `--json` that means stdout is still
-valid JSON — `[]` — while the exit code says there was nothing to find, so a script can
-test either one:
+| Code | Meaning | Example trigger | Set at |
+|------|---------|-----------------|--------|
+| `0` | `--help`, `--version`, no arguments, or the command printed what was asked for | `c7 --help` · `c7 docs /vercel/next.js routing` | `bin/c7.js:160`, `:169`; no explicit exit — `main()` returns |
+| `1` | Usage error: unknown flag, bad `--tokens`, a missing or blank argument, `--json` outside `resolve`, a subcommand typo | `c7 --tokens abc` · `c7 docs react --json` · `c7 reslove react` | `bin/c7.js:41` (`usage()`) |
+| `1` | Nothing usable came back: no match, a best match without a library ID, or a response carrying no documentation | `c7 resolve zzzznope` · JSON with neither `snippets` nor `content` | `bin/c7.js:91`, `:104`, `:111`, `:119` (the last via `lib/api.js`) |
+| `1` | Upstream or install failure: invalid library ID, timeout, network error, HTTP status, malformed JSON, non-documentation content-type, unreadable `package.json` | `c7 docs /vercel/next.js` without a valid key (401) | `lib/api.js` → `bin/c7.js:210`; `bin/c7.js:130` |
+
+Two notes for scripting:
+
+**An empty result is exit `1` in both output modes.** With `--json` that means stdout is
+still valid JSON — `[]` — while the exit code says there was nothing to find, so a script
+can test either one:
 
 ```bash
 c7 resolve nope --json   # prints [] on stdout, exits 1
 ```
+
+**"No docs found" and an empty document are the same exit.** A JSON envelope carrying
+neither `snippets` nor `content` is not documentation: exit `1`, `No docs found` on stderr.
+
+A closed pipe is not an error: `c7 docs react | head -1` exits `0`.
 
 ## A shorthand that looks like a typo
 
